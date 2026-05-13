@@ -3,7 +3,7 @@ services:
     build:
       context: ./backend
     env_file:
-      - .env
+      - ./backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg://genexamenes:genexamenes@db:5432/genexamenes
     ports:
