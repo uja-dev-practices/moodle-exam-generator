@@ -4,11 +4,10 @@ from collections.abc import AsyncIterator
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import exports, generation, health, templates
+from app.api.routes import auth, exports, generation, health, history, templates
 from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.middleware import RateLimitMiddleware, RequestSizeLimitMiddleware
-from app.core.security import require_api_key
 from app.db.init_db import init_db
 
 
@@ -35,10 +34,11 @@ def create_app() -> FastAPI:
     register_exception_handlers(app)
 
     app.include_router(health.router)
-    protected = [Depends(require_api_key)]
-    app.include_router(templates.router, prefix="/exam", dependencies=protected)
-    app.include_router(generation.router, prefix="/exam", dependencies=protected)
-    app.include_router(exports.router, prefix="/exam", dependencies=protected)
+    app.include_router(auth.router)
+    app.include_router(templates.router, prefix="/exam")
+    app.include_router(generation.router, prefix="/exam")
+    app.include_router(exports.router, prefix="/exam")
+    app.include_router(history.router, prefix="/exam")
 
     return app
 

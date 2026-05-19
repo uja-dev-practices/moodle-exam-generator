@@ -26,6 +26,21 @@ class ParseError(AppError):
         super().__init__(message=message, status_code=422, code="parse_error")
 
 
+class ConflictError(AppError):
+    def __init__(self, message: str = "Resource already exists") -> None:
+        super().__init__(message=message, status_code=409, code="conflict")
+
+
+class ForbiddenError(AppError):
+    def __init__(self, message: str = "Access denied") -> None:
+        super().__init__(message=message, status_code=403, code="forbidden")
+
+
+class UnauthorizedError(AppError):
+    def __init__(self, message: str = "Unauthorized") -> None:
+        super().__init__(message=message, status_code=401, code="unauthorized")
+
+
 def error_payload(code: str, message: str, details: object | None = None) -> dict[str, object]:
     payload: dict[str, object] = {"error": {"code": code, "message": message}}
     if details is not None:
