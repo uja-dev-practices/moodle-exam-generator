@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     llm_base_url: str = "https://api.openai.com/v1"
     llm_model: str = "gpt-4o-mini"
     llm_timeout_seconds: int = Field(default=60, ge=5)
+    jwt_secret_key: str = Field(min_length=32)
+    jwt_algorithm: str = "HS256"
+    jwt_expire_minutes: int = Field(default=60 * 24, ge=5)
+    google_client_id: str | None = None
 
     model_config = SettingsConfigDict(
         env_file=".env",

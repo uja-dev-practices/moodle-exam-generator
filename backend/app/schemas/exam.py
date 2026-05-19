@@ -125,3 +125,18 @@ class ExportResponse(BaseModel):
     template_id: uuid.UUID
     format: ExportFormat
     content: str
+
+
+class ExamHistoryItem(BaseModel):
+    id: uuid.UUID
+    title: str
+    subject: str
+    educational_level: str
+    language: str
+    question_count: int
+    export_count: int
+    last_export_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
