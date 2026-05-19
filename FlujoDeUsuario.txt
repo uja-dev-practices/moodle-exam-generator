@@ -1,22 +1,31 @@
 Ahora mismo el flujo es backend/API, sin frontend:
 
-1.- El profesor crea una plantilla con POST /exam/templates Define título, materia, nivel educativo, 
-tipos de preguntas, número de preguntas, puntuación, penalización y dificultad.
+0.- El profesor se registra (POST /auth/register) o inicia sesión (POST /auth/login) y obtiene un token JWT.
 
-2.- Genera un prompt con POST /exam/prompts/{template_id} La API devuelve un prompt estructurado para 
-pedirle al LLM preguntas en JSON válido.
+1.- Crea una plantilla con POST /exam/templates (requiere Authorization: Bearer <token>).
+   Define título, materia, nivel educativo, tipos de preguntas, puntuación, penalización y dificultad.
+   La plantilla queda guardada en base de datos asociada a su usuario.
+
+2.- Genera un prompt con POST /exam/prompts/{template_id}.
+   La API devuelve un prompt estructurado para pedirle al LLM preguntas en JSON válido.
 
 3.- Hay dos caminos posibles:
 
-    3.1.- Generación automática: POST /exam/generate La API llama al LLM configurado, parsea la respuesta y guarda las preguntas.
-    3.2.- Carga manual: POST /exam/parse El profesor pega una salida de IA en json o txt, y la API la valida y guarda.
+    3.1.- Generación automática: POST /exam/generate.
+          La API llama al LLM configurado, parsea la respuesta y guarda las preguntas.
 
-4.- El profesor exporta el examen:
+    3.2.- Carga manual: POST /exam/parse.
+          El profesor pega una salida de IA en json o txt, y la API la valida y guarda.
 
-GET /exam/export/xml/{template_id} para Moodle XML.
-GET /exam/export/txt/{template_id} para texto plano.
-GET /exam/export/json/{template_id} para JSON.
+4.- Consulta su historial con GET /exam/history.
+   Ve todos los exámenes que ha creado, cuántas preguntas tienen y cuándo exportó por última vez.
+
+5.- Exporta el examen:
+
+    GET /exam/export/xml/{template_id} para Moodle XML.
+    GET /exam/export/txt/{template_id} para texto plano.
+    GET /exam/export/json/{template_id} para JSON.
 
 (El XML generado se importa manualmente en Moodle.)
 
-En resumen: configurar plantilla → generar prompt o llamar al LLM → guardar preguntas → exportar Moodle XML.
+En resumen: registrarse → configurar plantilla → generar prompt o llamar al LLM → guardar preguntas → ver historial → exportar Moodle XML.

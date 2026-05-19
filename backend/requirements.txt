@@ -3,7 +3,12 @@ uvicorn[standard]
 SQLAlchemy
 psycopg[binary]
 pydantic-settings
+pydantic[email]
 python-dotenv
 httpx
 orjson
+passlib[bcrypt]
+python-jose[cryptography]
+google-auth
+requests
 pytest
