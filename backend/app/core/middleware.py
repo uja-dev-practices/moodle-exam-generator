@@ -17,6 +17,9 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.requests: defaultdict[str, deque[float]] = defaultdict(deque)
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        if request.method == "OPTIONS":
+            return await call_next(request)
+
         client = request.client.host if request.client else "unknown"
         now = time.monotonic()
         bucket = self.requests[client]
