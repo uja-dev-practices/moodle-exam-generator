@@ -4,7 +4,7 @@ from typing import Annotated
 
 from fastapi import Depends
 from jose import JWTError, jwt
-from passlib.context import CryptContext
+import bcrypt
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,15 @@ from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import UserLogin, UserRead, UserRegister
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+def _hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def _verify_password(password: str, password_hash: str) -> bool:
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except ValueError:
+        return False
 
 
 class AuthService:
@@ -34,7 +42,7 @@ class AuthService:
 
         user = User(
             email=email,
-            password_hash=pwd_context.hash(payload.password),
+            password_hash=_hash_password(payload.password),
             full_name=clean_text(payload.full_name, max_length=200) if payload.full_name else None,
         )
         self.db.add(user)
@@ -47,7 +55,7 @@ class AuthService:
         user = self.db.scalar(select(User).where(User.email == email))
         if user is None or user.password_hash is None:
             raise UnauthorizedError("Invalid email or password")
-        if not pwd_context.verify(payload.password, user.password_hash):
+        if not _verify_password(payload.password, user.password_hash):
             raise UnauthorizedError("Invalid email or password")
         return user
 

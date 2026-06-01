@@ -93,6 +93,11 @@ class ExamService:
     def get_template(self, user_id: uuid.UUID, template_id: uuid.UUID) -> ExamTemplateRead:
         return self._template_read(self._get_user_template_or_404(user_id, template_id))
 
+    def list_questions(self, user_id: uuid.UUID, template_id: uuid.UUID) -> list[QuestionRead]:
+        template = self._get_user_template_or_404(user_id, template_id)
+        questions = sorted(template.questions, key=lambda q: q.created_at)
+        return [self.to_question_read(question) for question in questions]
+
     def get_owned_template(self, user_id: uuid.UUID, template_id: uuid.UUID) -> ExamTemplate:
         return self._get_user_template_or_404(user_id, template_id)
 
