@@ -65,6 +65,10 @@ class QuestionCreate(BaseModel):
     correct_answers: list[str] = Field(min_length=1, max_length=20)
     wrong_answers: list[str] = Field(default_factory=list, max_length=20)
     matching_pairs: list[MatchingPair] = Field(default_factory=list, max_length=50)
+    image_id: uuid.UUID | None = Field(
+        default=None,
+        description="ID de imagen de la plantilla que debe mostrarse con la pregunta.",
+    )
     difficulty: Difficulty = Difficulty.MEDIUM
     score: float = Field(default=1.0, ge=0.0, le=100.0)
     penalty: float = Field(default=0.0, ge=0.0, le=100.0)
@@ -91,6 +95,7 @@ class QuestionCreate(BaseModel):
 class QuestionRead(QuestionCreate):
     id: uuid.UUID
     template_id: uuid.UUID
+    image_url: str | None = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
@@ -104,11 +109,19 @@ class PromptResponse(BaseModel):
 
 class BuildPromptRequest(BaseModel):
     topic_prompt: str = Field(min_length=5, max_length=4_000)
+    material_ids: list[uuid.UUID] | None = Field(
+        default=None,
+        description="IDs de materiales a incluir. Si no se indica, se usan todos los procesados.",
+    )
 
 
 class GenerateExamRequest(BaseModel):
     template_id: uuid.UUID
     topic_prompt: str = Field(min_length=5, max_length=4_000)
+    material_ids: list[uuid.UUID] | None = Field(
+        default=None,
+        description="IDs de materiales a incluir. Si no se indica, se usan todos los procesados.",
+    )
 
 
 class ParseRequest(BaseModel):

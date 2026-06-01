@@ -6,21 +6,27 @@ Ahora mismo el flujo es backend/API, sin frontend:
    Define título, materia, nivel educativo, tipos de preguntas, puntuación, penalización y dificultad.
    La plantilla queda guardada en base de datos asociada a su usuario.
 
-2.- Genera un prompt con POST /exam/prompts/{template_id}.
-   La API devuelve un prompt estructurado para pedirle al LLM preguntas en JSON válido.
+2.- Sube materiales de referencia con POST /exam/templates/{id}/materials (campo file).
+   Acepta PDF, DOCX, TXT, MD, PNG, JPG, WEBP. La API extrae el texto para contexto de la IA.
 
-3.- Hay dos caminos posibles:
+2b.- Sube imágenes de examen con POST /exam/templates/{id}/images (campo file, opcional caption).
+   PNG, JPG, WEBP, GIF. Se usan para mostrarlas en las preguntas (no para extraer texto).
 
-    3.1.- Generación automática: POST /exam/generate.
-          La API llama al LLM configurado, parsea la respuesta y guarda las preguntas.
+3.- Genera un prompt con POST /exam/prompts/{template_id}.
+   El prompt incluye el material subido + el tema indicado por el profesor.
 
-    3.2.- Carga manual: POST /exam/parse.
+4.- Hay dos caminos posibles:
+
+    4.1.- Generación automática: POST /exam/generate.
+          La API llama al LLM con el contexto de los ficheros y guarda las preguntas.
+
+    4.2.- Carga manual: POST /exam/parse.
           El profesor pega una salida de IA en json o txt, y la API la valida y guarda.
 
-4.- Consulta su historial con GET /exam/history.
+5.- Consulta su historial con GET /exam/history.
    Ve todos los exámenes que ha creado, cuántas preguntas tienen y cuándo exportó por última vez.
 
-5.- Exporta el examen:
+6.- Exporta el examen:
 
     GET /exam/export/xml/{template_id} para Moodle XML.
     GET /exam/export/txt/{template_id} para texto plano.
@@ -28,4 +34,4 @@ Ahora mismo el flujo es backend/API, sin frontend:
 
 (El XML generado se importa manualmente en Moodle.)
 
-En resumen: registrarse → configurar plantilla → generar prompt o llamar al LLM → guardar preguntas → ver historial → exportar Moodle XML.
+En resumen: registrarse → plantilla → subir materiales → prompt/generar con IA → historial → exportar Moodle XML.
