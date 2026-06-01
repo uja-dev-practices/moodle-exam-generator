@@ -26,7 +26,12 @@ def build_prompt(
     current_user: Annotated[User, Depends(get_current_user)],
     service: Annotated[ExamService, Depends(get_exam_service)],
 ) -> PromptResponse:
-    return service.build_prompt(current_user.id, template_id, payload.topic_prompt)
+    return service.build_prompt(
+        current_user.id,
+        template_id,
+        payload.topic_prompt,
+        payload.material_ids,
+    )
 
 
 @router.post("/generate", response_model=ParsedQuestionsResponse)
@@ -41,6 +46,7 @@ async def generate_exam(
         payload.template_id,
         payload.topic_prompt,
         llm_client,
+        payload.material_ids,
     )
 
 

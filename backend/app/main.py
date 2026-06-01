@@ -4,7 +4,7 @@ from collections.abc import AsyncIterator
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, exports, generation, health, history, templates
+from app.api.routes import auth, exports, generation, health, history, images, materials, questions, templates
 from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.middleware import RateLimitMiddleware, RequestSizeLimitMiddleware
@@ -25,7 +25,7 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=True,
-        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["Authorization", "Content-Type", "X-API-Key"],
     )
     app.add_middleware(RequestSizeLimitMiddleware, settings=settings)
@@ -39,6 +39,9 @@ def create_app() -> FastAPI:
     app.include_router(generation.router, prefix="/exam")
     app.include_router(exports.router, prefix="/exam")
     app.include_router(history.router, prefix="/exam")
+    app.include_router(materials.router, prefix="/exam")
+    app.include_router(images.router, prefix="/exam")
+    app.include_router(questions.router, prefix="/exam")
 
     return app
 
