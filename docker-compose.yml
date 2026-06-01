@@ -6,6 +6,11 @@ services:
       - ./backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg://genexamenes:genexamenes@db:5432/genexamenes
+      # Sobrescribe backend/.env si aún tiene el puerto 3000 del frontend antiguo.
+      ALLOWED_ORIGINS: http://localhost:5173,http://localhost:3000
+      LLM_BASE_URL: 
+      LLM_MODEL: qwen3.5:35b
+      LLM_TIMEOUT_SECONDS: "180"
     ports:
       - "8000:8000"
     depends_on:
@@ -16,11 +21,15 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: nginx:1.27-alpine
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     ports:
-      - "3000:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
+      - "5173:80"
+    depends_on:
+      - backend
     restart: unless-stopped
 
   db:

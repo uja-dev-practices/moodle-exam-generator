@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, status
 from app.api.dependencies import get_exam_service, get_storage_quota_service
 from app.core.auth import get_current_user
 from app.models.user import User
-from app.schemas.exam import ExamTemplateCreate, ExamTemplateRead
+from app.schemas.exam import ExamTemplateCreate, ExamTemplateRead, QuestionRead
 from app.schemas.storage import TemplateStorageUsage
 from app.services.exam_service import ExamService
 from app.services.storage_quota import StorageQuotaService
@@ -38,6 +38,15 @@ def get_template(
     service: Annotated[ExamService, Depends(get_exam_service)],
 ) -> ExamTemplateRead:
     return service.get_template(current_user.id, template_id)
+
+
+@router.get("/{template_id}/questions", response_model=list[QuestionRead])
+def list_template_questions(
+    template_id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[ExamService, Depends(get_exam_service)],
+) -> list[QuestionRead]:
+    return service.list_questions(current_user.id, template_id)
 
 
 @router.get("/{template_id}/storage", response_model=TemplateStorageUsage)
