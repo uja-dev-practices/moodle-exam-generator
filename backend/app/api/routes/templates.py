@@ -3,11 +3,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from app.api.dependencies import get_exam_service
+from app.api.dependencies import get_exam_service, get_storage_quota_service
 from app.core.auth import get_current_user
 from app.models.user import User
 from app.schemas.exam import ExamTemplateCreate, ExamTemplateRead
+from app.schemas.storage import TemplateStorageUsage
 from app.services.exam_service import ExamService
+from app.services.storage_quota import StorageQuotaService
 
 router = APIRouter(prefix="/templates", tags=["templates"])
 
@@ -36,3 +38,14 @@ def get_template(
     service: Annotated[ExamService, Depends(get_exam_service)],
 ) -> ExamTemplateRead:
     return service.get_template(current_user.id, template_id)
+
+
+@router.get("/{template_id}/storage", response_model=TemplateStorageUsage)
+def get_template_storage_usage(
+    template_id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    exam_service: Annotated[ExamService, Depends(get_exam_service)],
+    storage_quota: Annotated[StorageQuotaService, Depends(get_storage_quota_service)],
+) -> TemplateStorageUsage:
+    exam_service.get_owned_template(current_user.id, template_id)
+    return TemplateStorageUsage.model_validate(storage_quota.get_usage_summary(template_id))

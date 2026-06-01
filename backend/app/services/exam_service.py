@@ -17,7 +17,9 @@ from app.schemas.exam import (
     QuestionCreate,
     QuestionRead,
 )
+from app.services.image_service import ImageService
 from app.services.llm import LLMClient
+from app.services.material_service import MaterialService
 from app.services.moodle_exporter import MoodleXMLExporter
 from app.services.parser import AIQuestionParser
 from app.services.prompt_builder import PromptBuilder
@@ -30,11 +32,15 @@ class ExamService:
         prompt_builder: PromptBuilder | None = None,
         parser: AIQuestionParser | None = None,
         exporter: MoodleXMLExporter | None = None,
+        material_service: MaterialService | None = None,
+        image_service: ImageService | None = None,
     ) -> None:
         self.db = db
         self.prompt_builder = prompt_builder or PromptBuilder()
         self.parser = parser or AIQuestionParser()
         self.exporter = exporter or MoodleXMLExporter()
+        self.material_service = material_service
+        self.image_service = image_service
 
     def create_template(self, user_id: uuid.UUID, payload: ExamTemplateCreate) -> ExamTemplateRead:
         template = ExamTemplate(
@@ -87,9 +93,25 @@ class ExamService:
     def get_template(self, user_id: uuid.UUID, template_id: uuid.UUID) -> ExamTemplateRead:
         return self._template_read(self._get_user_template_or_404(user_id, template_id))
 
-    def build_prompt(self, user_id: uuid.UUID, template_id: uuid.UUID, topic_prompt: str) -> PromptResponse:
+    def get_owned_template(self, user_id: uuid.UUID, template_id: uuid.UUID) -> ExamTemplate:
+        return self._get_user_template_or_404(user_id, template_id)
+
+    def build_prompt(
+        self,
+        user_id: uuid.UUID,
+        template_id: uuid.UUID,
+        topic_prompt: str,
+        material_ids: list[uuid.UUID] | None = None,
+    ) -> PromptResponse:
         template = self._get_user_template_or_404(user_id, template_id)
-        prompt = self.prompt_builder.build_prompt(template, topic_prompt)
+        reference_context = self._reference_context(template_id, material_ids)
+        images_catalog = self._images_catalog(template_id)
+        prompt = self.prompt_builder.build_prompt(
+            template,
+            topic_prompt,
+            reference_context,
+            images_catalog,
+        )
         return PromptResponse(template_id=template.id, prompt=prompt)
 
     async def generate_with_llm(
@@ -98,9 +120,17 @@ class ExamService:
         template_id: uuid.UUID,
         topic_prompt: str,
         llm_client: LLMClient,
+        material_ids: list[uuid.UUID] | None = None,
     ) -> ParsedQuestionsResponse:
         template = self._get_user_template_or_404(user_id, template_id)
-        prompt = self.prompt_builder.build_prompt(template, topic_prompt)
+        reference_context = self._reference_context(template_id, material_ids)
+        images_catalog = self._images_catalog(template_id)
+        prompt = self.prompt_builder.build_prompt(
+            template,
+            topic_prompt,
+            reference_context,
+            images_catalog,
+        )
         raw_output = await llm_client.generate(prompt)
         questions = self.parser.parse_json(raw_output)
         return self._persist_questions(template.id, questions)
@@ -116,8 +146,9 @@ class ExamService:
         if not questions:
             raise NotFoundError("Template does not contain questions to export")
 
+        image_map = self._image_map(template.id)
         if export_format == ExportFormat.XML:
-            content = self.exporter.export_xml(questions)
+            content = self.exporter.export_xml(questions, image_map)
         elif export_format == ExportFormat.TXT:
             content = self.exporter.export_txt(questions)
         else:
@@ -134,9 +165,30 @@ class ExamService:
         self.db.commit()
         return ExportResponse(template_id=template.id, format=export_format, content=content)
 
+    def get_owned_question(self, user_id: uuid.UUID, question_id: uuid.UUID) -> tuple[Question, ExamTemplate]:
+        question = self.db.get(Question, question_id)
+        if question is None:
+            raise NotFoundError("Question not found")
+        template = self._get_user_template_or_404(user_id, question.template_id)
+        if question.template_id != template.id:
+            raise NotFoundError("Question not found")
+        return question, template
+
+    def to_question_read(self, question: Question) -> QuestionRead:
+        read = QuestionRead.model_validate(question)
+        if question.image_id:
+            return read.model_copy(update={"image_url": f"/exam/images/{question.image_id}/content"})
+        return read
+
     def _persist_questions(self, template_id: uuid.UUID, questions: list[QuestionCreate]) -> ParsedQuestionsResponse:
         persisted: list[Question] = []
         for payload in questions:
+            image_id = payload.image_id
+            if image_id is not None:
+                if self.image_service is None:
+                    raise NotFoundError("Image service is not available")
+                self.image_service.get_image_for_template(template_id, image_id)
+
             question = Question(
                 template_id=template_id,
                 question_type=payload.question_type,
@@ -144,6 +196,7 @@ class ExamService:
                 correct_answers=[clean_text(answer, max_length=1_000) for answer in payload.correct_answers],
                 wrong_answers=[clean_text(answer, max_length=1_000) for answer in payload.wrong_answers],
                 matching_pairs=[pair.model_dump() for pair in payload.matching_pairs],
+                image_id=image_id,
                 difficulty=payload.difficulty,
                 score=payload.score,
                 penalty=payload.penalty,
@@ -156,7 +209,26 @@ class ExamService:
         for question in persisted:
             self.db.refresh(question)
 
-        return ParsedQuestionsResponse(questions=[QuestionRead.model_validate(question) for question in persisted])
+        return ParsedQuestionsResponse(questions=[self.to_question_read(question) for question in persisted])
+
+    def _reference_context(
+        self,
+        template_id: uuid.UUID,
+        material_ids: list[uuid.UUID] | None,
+    ) -> str:
+        if self.material_service is None:
+            return ""
+        return self.material_service.build_reference_context(template_id, material_ids)
+
+    def _images_catalog(self, template_id: uuid.UUID) -> str:
+        if self.image_service is None:
+            return ""
+        return self.image_service.images_catalog(template_id)
+
+    def _image_map(self, template_id: uuid.UUID) -> dict[uuid.UUID, object]:
+        if self.image_service is None:
+            return {}
+        return self.image_service.build_image_map(template_id)
 
     def _get_user_template_or_404(self, user_id: uuid.UUID, template_id: uuid.UUID) -> ExamTemplate:
         template = self.db.get(ExamTemplate, template_id)

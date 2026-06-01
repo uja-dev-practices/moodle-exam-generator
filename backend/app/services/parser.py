@@ -72,12 +72,14 @@ class AIQuestionParser:
         if isinstance(wrong, str):
             wrong = [wrong]
 
+        image_id = item.get("image_id")
         return {
             "question_type": question_type,
             "statement": item.get("statement", item.get("question", item.get("prompt", ""))),
             "correct_answers": correct,
             "wrong_answers": wrong,
             "matching_pairs": item.get("matching_pairs", []),
+            "image_id": image_id,
             "difficulty": item.get("difficulty", Difficulty.MEDIUM.value),
             "score": item.get("score", 1.0),
             "penalty": item.get("penalty", 0.0),
