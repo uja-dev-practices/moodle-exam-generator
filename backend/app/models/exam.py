@@ -35,6 +35,11 @@ class ExportFormat(str, enum.Enum):
     JSON = "json"
 
 
+class MaterialStatus(str, enum.Enum):
+    PROCESSED = "processed"
+    FAILED = "failed"
+
+
 class ExamTemplate(Base):
     __tablename__ = "exam_templates"
 
@@ -66,6 +71,16 @@ class ExamTemplate(Base):
         cascade="all, delete-orphan",
         passive_deletes=True,
     )
+    materials: Mapped[list["ExamMaterial"]] = relationship(
+        back_populates="template",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    images: Mapped[list["ExamImage"]] = relationship(
+        back_populates="template",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Question(Base):
@@ -87,9 +102,16 @@ class Question(Base):
     score: Mapped[float] = mapped_column(Float, nullable=False, default=1.0)
     penalty: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     options: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    image_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("exam_images.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     template: Mapped[ExamTemplate] = relationship(back_populates="questions")
+    image: Mapped["ExamImage | None"] = relationship(back_populates="questions")
 
 
 class ExportJob(Base):
@@ -108,3 +130,47 @@ class ExportJob(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     template: Mapped[ExamTemplate] = relationship(back_populates="export_jobs")
+
+
+class ExamMaterial(Base):
+    __tablename__ = "exam_materials"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    template_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("exam_templates.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    mime_type: Mapped[str] = mapped_column(String(120), nullable=False)
+    size_bytes: Mapped[int] = mapped_column(nullable=False)
+    storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    extracted_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    status: Mapped[MaterialStatus] = mapped_column(Enum(MaterialStatus), nullable=False)
+    error_message: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    template: Mapped[ExamTemplate] = relationship(back_populates="materials")
+
+
+class ExamImage(Base):
+    __tablename__ = "exam_images"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    template_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("exam_templates.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    stored_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    mime_type: Mapped[str] = mapped_column(String(120), nullable=False)
+    size_bytes: Mapped[int] = mapped_column(nullable=False)
+    storage_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    caption: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    template: Mapped[ExamTemplate] = relationship(back_populates="images")
+    questions: Mapped[list["Question"]] = relationship(back_populates="image")

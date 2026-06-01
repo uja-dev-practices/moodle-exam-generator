@@ -32,8 +32,8 @@ def clean_text(value: str, *, max_length: int = 8_000) -> str:
     return cleaned
 
 
-def sanitize_prompt_input(value: str) -> str:
-    cleaned = clean_text(value, max_length=4_000)
+def sanitize_prompt_input(value: str, *, max_length: int = 4_000) -> str:
+    cleaned = clean_text(value, max_length=max_length)
     return ROLE_INJECTION_HINTS.sub("[filtered instruction]", cleaned)
 
 
