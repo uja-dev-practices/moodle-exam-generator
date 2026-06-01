@@ -11,7 +11,7 @@ El proyecto está centrado en backend. La carpeta `frontend` se mantiene vacía 
 - FastAPI
 - PostgreSQL
 - SQLAlchemy
-- Cliente LLM compatible con OpenAI Chat Completions
+- Cliente LLM para Sinbad2IA UJA (`POST /api/chat`, modelo `qwen3.5:35b`)
 - Docker Compose con servicios `backend`, `frontend` y `db`
 
 ## Puesta en Marcha
@@ -44,9 +44,10 @@ Variables principales:
 - `JWT_EXPIRE_MINUTES`: duración del token de acceso.
 - `GOOGLE_CLIENT_ID`: Client ID de OAuth 2.0 en Google Cloud Console (para `/auth/google`).
 - `DATABASE_URL`: conexión PostgreSQL usada por el backend.
-- `LLM_API_KEY`: clave del proveedor LLM.
-- `LLM_BASE_URL`: endpoint compatible con OpenAI.
-- `LLM_MODEL`: modelo usado para generar preguntas.
+- `LLM_BASE_URL`: URL base del servidor (por defecto `http://sinbad2ia.ujaen.es:8050`; el cliente usa `/api/chat`).
+- `LLM_MODEL`: modelo (por defecto `qwen3.5:35b`).
+- `LLM_TIMEOUT_SECONDS`: tiempo máximo de espera (por defecto 180 s).
+- `LLM_API_KEY`: opcional, solo si el servidor exige autenticación.
 - `ALLOWED_ORIGINS`: orígenes permitidos por CORS.
 - `MAX_STORAGE_BYTES_PER_TEMPLATE`: cupo total de almacenamiento por examen (materiales + imágenes).
 

@@ -21,15 +21,18 @@ def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
+    # CORS debe ser el middleware más externo (añadirlo al final) para que
+    # las peticiones OPTIONS (preflight) respondan antes que rate limit, etc.
+    app.add_middleware(RequestSizeLimitMiddleware, settings=settings)
+    app.add_middleware(RateLimitMiddleware, settings=settings)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type", "X-API-Key"],
+        allow_headers=["Authorization", "Content-Type", "X-API-Key", "Accept"],
+        expose_headers=["Content-Disposition"],
     )
-    app.add_middleware(RequestSizeLimitMiddleware, settings=settings)
-    app.add_middleware(RateLimitMiddleware, settings=settings)
 
     register_exception_handlers(app)
 
