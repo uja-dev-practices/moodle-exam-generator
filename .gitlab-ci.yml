@@ -23,27 +23,35 @@ deploy_to_sinbad2:
     - scp -r ./* $REMOTE_USER@$SSH_HOST:~/deploy_$APP_NAME/
 
     - echo "Levantando contenedores con Docker Compose..."
-    - ssh $REMOTE_USER@$SSH_HOST "
-        cd ~/deploy_$APP_NAME &&
-        echo 'Comprobando puertos en uso...' &&
-        docker ps --format '{{.ID}} {{.Ports}}' | grep -E '0.0.0.0:$FRONTEND_PORT->|0.0.0.0:$BACKEND_PORT->' || true &&
-        CONFLICT_FRONT=\$(docker ps -q --filter publish=$FRONTEND_PORT) &&
-        if [ ! -z \"\$CONFLICT_FRONT\" ]; then
-          echo \"Liberando puerto frontend $FRONTEND_PORT (contenedores: \$CONFLICT_FRONT)\" &&
-          docker stop \$CONFLICT_FRONT &&
-          docker rm \$CONFLICT_FRONT;
-        fi &&
-        CONFLICT_BACK=\$(docker ps -q --filter publish=$BACKEND_PORT) &&
-        if [ ! -z \"\$CONFLICT_BACK\" ]; then
-          echo \"Liberando puerto backend $BACKEND_PORT (contenedores: \$CONFLICT_BACK)\" &&
-          docker stop \$CONFLICT_BACK &&
-          docker rm \$CONFLICT_BACK;
-        fi &&
-        export BACKEND_PORT=$BACKEND_PORT FRONTEND_PORT=$FRONTEND_PORT ALLOWED_ORIGINS=\"http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:$FRONTEND_PORT\" &&
-        docker compose down --remove-orphans &&
-        docker compose build --no-cache frontend backend &&
-        docker compose up -d
-      "
+    - |
+      ssh "$REMOTE_USER@$SSH_HOST" <<EOF
+      set -e
+      cd ~/deploy_$APP_NAME
+      echo "Comprobando puertos en uso..."
+      docker ps --format '{{.ID}} {{.Ports}}' | grep -E "0.0.0.0:$FRONTEND_PORT->|0.0.0.0:$BACKEND_PORT->" || true
+
+      CONFLICT_FRONT=\$(docker ps -q --filter publish=$FRONTEND_PORT)
+      if [ -n "\$CONFLICT_FRONT" ]; then
+        echo "Liberando puerto frontend $FRONTEND_PORT (contenedores: \$CONFLICT_FRONT)"
+        docker stop \$CONFLICT_FRONT
+        docker rm \$CONFLICT_FRONT
+      fi
+
+      CONFLICT_BACK=\$(docker ps -q --filter publish=$BACKEND_PORT)
+      if [ -n "\$CONFLICT_BACK" ]; then
+        echo "Liberando puerto backend $BACKEND_PORT (contenedores: \$CONFLICT_BACK)"
+        docker stop \$CONFLICT_BACK
+        docker rm \$CONFLICT_BACK
+      fi
+
+      export BACKEND_PORT=$BACKEND_PORT
+      export FRONTEND_PORT=$FRONTEND_PORT
+      export ALLOWED_ORIGINS="http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:$FRONTEND_PORT"
+
+      docker compose down --remove-orphans
+      docker compose build --no-cache frontend backend
+      docker compose up -d
+      EOF
 
     - echo "Despliegue completado."
     - echo "Backend  -> http://sinbad2.ujaen.es:$BACKEND_PORT"
