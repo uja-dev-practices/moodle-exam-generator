@@ -2,7 +2,7 @@
 
 Documento resumen para entender **qué hace el usuario en cada paso**, **qué endpoint usar**, **cabeceras**, **cuerpos**, **ejemplos de respuesta** y **errores típicos**.
 
-**Base URL de ejemplo:** `http://localhost:8074`
+**Base URL de ejemplo:** `http://sinbad2.ujaen.es:8074`
 
 ---
 
@@ -131,7 +131,7 @@ Detalle de cuerpos, respuestas y errores: **sección 4** de esta guía.
 **Ejemplo:**
 
 ```bash
-curl -s http://localhost:8074/health
+curl -s http://sinbad2.ujaen.es:8074/health
 ```
 
 **Respuesta OK (200):**
@@ -165,7 +165,7 @@ curl -s http://localhost:8074/health
 **Ejemplo:**
 
 ```bash
-curl -s -X POST http://localhost:8074/auth/register \
+curl -s -X POST http://sinbad2.ujaen.es:8074/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"profesor@ejemplo.com","password":"ClaveSegura1","full_name":"María"}'
 ```
@@ -303,7 +303,7 @@ Todas requieren: `Authorization: Bearer <token>`
 **Ejemplo mínimo:**
 
 ```bash
-curl -s -X POST http://localhost:8074/exam/templates \
+curl -s -X POST http://sinbad2.ujaen.es:8074/exam/templates \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -415,7 +415,7 @@ Sirven para **texto** que la IA puede usar al generar (PDF, DOCX, TXT, MD; imág
 **Ejemplo:**
 
 ```bash
-curl -s -X POST "http://localhost:8074/exam/templates/TEMPLATE_UUID/materials" \
+curl -s -X POST "http://sinbad2.ujaen.es:8074/exam/templates/TEMPLATE_UUID/materials" \
   -H "Authorization: Bearer $TOKEN" \
   -F "file=@./apuntes.pdf"
 ```
@@ -468,7 +468,7 @@ Solo para **mostrar en la pregunta** (Moodle); no rellenan el contexto de texto 
 **Ejemplo:**
 
 ```bash
-curl -s -X POST "http://localhost:8074/exam/templates/TEMPLATE_UUID/images" \
+curl -s -X POST "http://sinbad2.ujaen.es:8074/exam/templates/TEMPLATE_UUID/images" \
   -H "Authorization: Bearer $TOKEN" \
   -F "file=@./diagrama.png" \
   -F "caption=Diagrama del modelo ER"

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const API_URL =
-  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://localhost:8074";
+  import.meta.env.VITE_API_URL?.replace(/\/$/, "") || "http://sinbad2.ujaen.es:8074";
 
 const TOKEN_KEY = "genex_token";
 
