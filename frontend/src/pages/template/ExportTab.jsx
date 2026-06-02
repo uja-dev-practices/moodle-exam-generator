@@ -73,7 +73,7 @@ export default function ExportTab({ templateId, template, questions }) {
 
   return (
     <div>
-      <p className="text-soft mb">
+      <p className="text-soft page-lead mb">
         Tu examen tiene <strong>{questions.length} preguntas</strong>. Elige un
         formato para descargarlo o previsualizarlo.
       </p>
@@ -87,7 +87,7 @@ export default function ExportTab({ templateId, template, questions }) {
             <p className="text-sm text-soft" style={{ minHeight: 60 }}>
               {fmt.desc}
             </p>
-            <div className="flex gap-sm">
+            <div className="flex gap-sm mobile-stack">
               <Button
                 onClick={() => run(fmt, { download: true })}
                 loading={loadingFormat === fmt.id}

@@ -65,10 +65,12 @@ export default function ImagesTab({
   };
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: "1fr 320px" }}>
+    <div className="grid layout-split">
       <div>
         <div className="card mb">
           <div className="card-body">
+            <h3 className="section-title">Subir imágenes del examen</h3>
+            <p className="section-subtle mb">Añade recursos visuales para preguntas con soporte gráfico.</p>
             <FileDropzone
               accept={IMAGE_ACCEPT}
               icon="image"

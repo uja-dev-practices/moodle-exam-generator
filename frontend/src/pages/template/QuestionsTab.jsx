@@ -52,8 +52,8 @@ export default function QuestionsTab({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb">
-        <p className="text-soft" style={{ margin: 0 }}>
+      <div className="flex justify-between items-center mb wrap gap-sm">
+        <p className="text-soft page-lead" style={{ margin: 0 }}>
           {questions.length} preguntas guardadas. Vincula imágenes a las
           preguntas que las necesiten.
         </p>

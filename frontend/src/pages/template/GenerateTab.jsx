@@ -104,7 +104,7 @@ export default function GenerateTab({
   const topicTooShort = topic.trim().length < 5;
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: "1fr 340px" }}>
+    <div className="grid layout-split">
       <div>
         <div className="tabs" style={{ marginBottom: 18 }}>
           {MODES.map((m) => (
@@ -122,6 +122,9 @@ export default function GenerateTab({
         {mode !== "parse" && (
           <div className="card mb">
             <div className="card-body">
+              <h3 className="section-title mb-sm">
+                {mode === "auto" ? "Generación automática" : "Construcción de prompt"}
+              </h3>
               <Field
                 label="Tema / instrucciones para la IA"
                 hint="Describe el contenido o enfoque del examen (mínimo 5 caracteres)."
@@ -157,7 +160,7 @@ export default function GenerateTab({
                 </Field>
               )}
 
-              <div className="flex gap mt">
+              <div className="flex gap mt mobile-stack">
                 {mode === "auto" ? (
                   <Button
                     size="lg"
@@ -244,7 +247,7 @@ export default function GenerateTab({
 
         {generated.length > 0 && (
           <div className="mt-lg">
-            <div className="flex justify-between items-center mb">
+            <div className="flex justify-between items-center mb wrap gap-sm">
               <h3 style={{ margin: 0 }}>
                 Resultado ({generated.length} preguntas)
               </h3>
