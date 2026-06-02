@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     api_prefix: str = ""
     api_key: str = Field(min_length=16)
     database_url: str = "postgresql+psycopg://genexamenes:genexamenes@localhost:5432/genexamenes"
-    allowed_origins: str = "http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8075"
+    allowed_origins: str = "https://sinbad2.ujaen.es,http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8075"
     rate_limit_requests: int = Field(default=60, ge=1)
     rate_limit_window_seconds: int = Field(default=60, ge=1)
     max_request_bytes: int = Field(default=1_048_576, ge=1_024)
