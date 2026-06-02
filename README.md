@@ -31,7 +31,7 @@ docker compose up --build
 La API queda disponible en:
 
 ```text
-http://localhost:8000
+http://localhost:8074
 ```
 
 ## Configuración
