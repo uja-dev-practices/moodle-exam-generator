@@ -38,7 +38,7 @@ npm run dev               # http://sinbad2.ujaen.es:8075
 
 | Variable                | Descripción                                              |
 | ----------------------- | -------------------------------------------------------- |
-| `VITE_APP_BASE_PATH`    | Base pública de la SPA (debe terminar en `/`). En producción UJA: `/generadorexamenesllm/`. |
+| `VITE_APP_BASE_PATH`    | Base pública de la SPA (debe terminar en `/`). En producción UJA: `/deckofcars/generadorexamenesllm/`. |
 | `VITE_API_URL`          | URL base de la API. Si se deja vacía, usa la misma base pública de la app. |
 | `VITE_GOOGLE_CLIENT_ID` | (Opcional) Client ID de Google. Si está vacío, se oculta el botón de Google. |
 
@@ -69,18 +69,18 @@ variables de entorno al ejecutar `docker compose`.
 Para ejecutarlo detrás de Apache en `https://sinbad2.ujaen.es/deckofcars` con:
 
 ```apache
-ProxyPass        /generadorexamenesllm  http://host.docker.internal:8075/
-ProxyPassReverse /generadorexamenesllm  http://host.docker.internal:8075/
+ProxyPass        /deckofcars/generadorexamenesllm  http://host.docker.internal:8075/
+ProxyPassReverse /deckofcars/generadorexamenesllm  http://host.docker.internal:8075/
 ```
 
 usa estos valores de build:
 
 ```env
-VITE_APP_BASE_PATH=/generadorexamenesllm/
+VITE_APP_BASE_PATH=/deckofcars/generadorexamenesllm/
 VITE_API_URL=
 ```
 
-Con esto, el frontend sirve assets/rutas bajo `/generadorexamenesllm` y consume la API por HTTPS en la misma base (sin mixed content).
+Con esto, el frontend sirve assets/rutas bajo `/deckofcars/generadorexamenesllm` y consume la API por HTTPS en la misma base (sin mixed content).
 
 ## Manejo de errores
 
