@@ -122,7 +122,7 @@ export default function CreateTemplatePage() {
       <div className="page-header">
         <div>
           <h1>Nuevo examen</h1>
-          <p>Define la estructura. Después podrás subir material y generar preguntas.</p>
+          <p className="page-lead">Define la estructura. Después podrás subir material y generar preguntas.</p>
         </div>
       </div>
 
@@ -192,7 +192,7 @@ export default function CreateTemplatePage() {
                 className="card"
                 style={{ padding: 16, marginBottom: 14, background: "var(--c-surface-2)" }}
               >
-                <div className="flex justify-between items-center mb">
+                <div className="flex justify-between items-center mb wrap gap-sm">
                   <strong>Bloque {idx + 1}</strong>
                   {types.length > 1 && (
                     <Button
@@ -263,7 +263,7 @@ export default function CreateTemplatePage() {
                         }
                       />
                     </Field>
-                    <div style={{ paddingTop: 26 }}>
+                    <div style={{ paddingTop: 8 }}>
                       <Checkbox
                         label="Permitir varias respuestas correctas"
                         checked={t.multiple_correct}
@@ -343,7 +343,7 @@ export default function CreateTemplatePage() {
           </div>
         </div>
 
-        <div className="flex gap justify-between">
+        <div className="flex gap justify-between wrap mobile-stack mt">
           <Button type="button" variant="ghost" onClick={() => navigate("/")}>
             Cancelar
           </Button>

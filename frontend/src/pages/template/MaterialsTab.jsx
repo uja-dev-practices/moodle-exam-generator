@@ -67,10 +67,12 @@ export default function MaterialsTab({
   };
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: "1fr 320px" }}>
+    <div className="grid layout-split">
       <div>
         <div className="card mb">
           <div className="card-body">
+            <h3 className="section-title">Subir material para IA</h3>
+            <p className="section-subtle mb">Soporta PDF, DOCX, TXT, MD e imágenes con OCR.</p>
             {uploading ? (
               <div className="text-center" style={{ padding: 24 }}>
                 <Spinner large />
@@ -127,7 +129,7 @@ export default function MaterialsTab({
                     </div>
                   )}
                 </div>
-                <div className="flex gap-sm items-center" style={{ flex: "none" }}>
+                <div className="flex gap-sm items-center mobile-stack list-item-actions" style={{ flex: "none" }}>
                   <Badge variant={badge.variant}>{badge.label}</Badge>
                   <Button
                     variant="danger-ghost"

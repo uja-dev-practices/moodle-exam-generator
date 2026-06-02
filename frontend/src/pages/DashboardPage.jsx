@@ -32,10 +32,10 @@ export default function DashboardPage() {
       <div className="page-header">
         <div>
           <h1>Mis exámenes</h1>
-          <p>Gestiona tus plantillas de examen y genera preguntas con IA.</p>
+          <p className="page-lead">Gestiona tus plantillas de examen y genera preguntas con IA.</p>
         </div>
         <div className="page-header-actions">
-          <Button onClick={() => navigate("/plantillas/nueva")}>
+          <Button onClick={() => navigate("/plantillas/nueva")} size="lg">
             <Icon name="plus" size={16} className="icon-inline" />
             Nuevo examen
           </Button>

@@ -154,6 +154,24 @@ export default function TemplateDetailPage() {
         </div>
       </div>
 
+      <div className="tabs-select-wrap">
+        <label className="field-label" htmlFor="template-tab-select">
+          Sección actual
+        </label>
+        <select
+          id="template-tab-select"
+          className="select"
+          value={tab}
+          onChange={(e) => setTab(e.target.value)}
+        >
+          {TABS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="tabs">
         {TABS.map((t) => (
           <button

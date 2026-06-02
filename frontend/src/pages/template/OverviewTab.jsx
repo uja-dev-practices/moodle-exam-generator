@@ -13,18 +13,18 @@ export default function OverviewTab({ template, storage, goToTab }) {
   const profile = template.difficulty_profile || {};
 
   return (
-    <div className="grid" style={{ gridTemplateColumns: "1.4fr 1fr" }}>
+    <div className="grid layout-split-wide">
       <div>
         <div className="card mb">
           <div className="card-head">
             <h3>Estructura del examen</h3>
           </div>
           <div className="card-body">
-            <h4 className="text-soft text-sm">Tipos de pregunta</h4>
+            <h4 className="section-title">Tipos de pregunta</h4>
             {qTypes.map((qt, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center"
+                className="flex justify-between items-center wrap gap-sm"
                 style={{
                   padding: "10px 0",
                   borderBottom:
@@ -50,7 +50,7 @@ export default function OverviewTab({ template, storage, goToTab }) {
             ))}
 
             <div className="divider-line" />
-            <h4 className="text-soft text-sm">Reparto por dificultad</h4>
+            <h4 className="section-title">Reparto por dificultad</h4>
             <div className="flex gap-sm wrap">
               {Object.entries(profile).map(([key, val]) =>
                 val > 0 ? (
@@ -62,6 +62,7 @@ export default function OverviewTab({ template, storage, goToTab }) {
             </div>
 
             <div className="divider-line" />
+            <h4 className="section-title">Opciones activas</h4>
             <div className="flex gap-sm wrap text-sm">
               <Badge variant={template.settings?.shuffle_questions ? "success" : undefined}>
                 <Icon
