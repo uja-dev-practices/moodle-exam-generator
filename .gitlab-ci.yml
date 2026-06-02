@@ -46,7 +46,9 @@ deploy_to_sinbad2:
 
       export BACKEND_PORT=$BACKEND_PORT
       export FRONTEND_PORT=$FRONTEND_PORT
-      export ALLOWED_ORIGINS="http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:$FRONTEND_PORT"
+      export ALLOWED_ORIGINS="https://sinbad2.ujaen.es,http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:$FRONTEND_PORT"
+      export VITE_APP_BASE_PATH="/deckofcars/generadorexamenesllm/"
+      export VITE_API_URL=""
 
       docker compose down --remove-orphans
       docker compose build --no-cache frontend backend
@@ -56,6 +58,7 @@ deploy_to_sinbad2:
     - echo "Despliegue completado."
     - echo "Backend  -> http://sinbad2.ujaen.es:$BACKEND_PORT"
     - echo "Frontend -> http://sinbad2.ujaen.es:$FRONTEND_PORT"
+    - echo "Public URL -> https://sinbad2.ujaen.es/deckofcars/generadorexamenesllm/"
 
   only:
     - branches

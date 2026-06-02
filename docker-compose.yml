@@ -24,7 +24,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_APP_BASE_PATH: ${VITE_APP_BASE_PATH:-/generadorexamenesllm/}
+        VITE_APP_BASE_PATH: ${VITE_APP_BASE_PATH:-/deckofcars/generadorexamenesllm/}
         VITE_API_URL: ${VITE_API_URL:-}
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     ports:
