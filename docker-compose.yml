@@ -7,7 +7,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://genexamenes:genexamenes@db:5432/genexamenes
       # Sobrescribe backend/.env con el puerto actual del frontend.
-      ALLOWED_ORIGINS: http://localhost:8075
+      ALLOWED_ORIGINS: http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8075
       LLM_BASE_URL: 
       LLM_MODEL: qwen3.5:35b
       LLM_TIMEOUT_SECONDS: "180"
@@ -24,7 +24,7 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:8074}
+        VITE_API_URL: ${VITE_API_URL:-http://sinbad2.ujaen.es:8074}
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     ports:
       - "8075:80"

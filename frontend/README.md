@@ -25,20 +25,20 @@ src/
 
 ## Desarrollo local
 
-Requisitos: Node 20+ y el backend corriendo en `http://localhost:8074`.
+Requisitos: Node 20+ y el backend corriendo en `http://sinbad2.ujaen.es:8074`.
 
 ```bash
 cd frontend
 cp .env.example .env      # ajusta VITE_API_URL si es necesario
 npm install
-npm run dev               # http://localhost:8075
+npm run dev               # http://sinbad2.ujaen.es:8075
 ```
 
 ## Variables de entorno
 
 | Variable                | Descripción                                              |
 | ----------------------- | -------------------------------------------------------- |
-| `VITE_API_URL`          | URL base del backend (por defecto `http://localhost:8074`). |
+| `VITE_API_URL`          | URL base del backend (por defecto `http://sinbad2.ujaen.es:8074`). |
 | `VITE_GOOGLE_CLIENT_ID` | (Opcional) Client ID de Google. Si está vacío, se oculta el botón de Google. |
 
 > Las variables `VITE_*` se incrustan en el build, por lo que apuntan al backend
@@ -54,7 +54,7 @@ npm run preview   # sirve el build localmente
 ## Docker
 
 El `docker-compose.yml` de la raíz construye el frontend con un build multi-stage
-(Node → Nginx) y lo publica en `http://localhost:8075`:
+(Node → Nginx) y lo publica en `http://sinbad2.ujaen.es:8075`:
 
 ```bash
 docker compose up --build
