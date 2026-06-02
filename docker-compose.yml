@@ -7,7 +7,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://genexamenes:genexamenes@db:5432/genexamenes
       # Sobrescribe backend/.env con el origen público del frontend en despliegue.
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8075}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://sinbad2.ujaen.es,http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8075}
       LLM_BASE_URL: 
       LLM_MODEL: qwen3.5:35b
       LLM_TIMEOUT_SECONDS: "180"
@@ -24,7 +24,8 @@ services:
     build:
       context: ./frontend
       args:
-        VITE_API_URL: ${VITE_API_URL:-http://sinbad2.ujaen.es:8074}
+        VITE_APP_BASE_PATH: ${VITE_APP_BASE_PATH:-/generadorexamenesllm/}
+        VITE_API_URL: ${VITE_API_URL:-}
         VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
     ports:
       - "${FRONTEND_PORT:-8075}:80"
