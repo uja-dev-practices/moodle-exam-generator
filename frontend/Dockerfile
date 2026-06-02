@@ -2,7 +2,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-ARG VITE_APP_BASE_PATH=/deckofcars/generadorexamenesllm/
+ARG VITE_APP_BASE_PATH=/generadorexamenesllm/
 ARG VITE_API_URL=
 ARG VITE_GOOGLE_CLIENT_ID=
 ENV VITE_APP_BASE_PATH=$VITE_APP_BASE_PATH
