@@ -25,7 +25,7 @@ src/
 
 ## Desarrollo local
 
-Requisitos: Node 20+ y el backend corriendo en `http://sinbad2.ujaen.es:8074`.
+Requisitos: Node 20+ y el backend corriendo en `http://sinbad2.ujaen.es:8068`.
 
 ```bash
 cd frontend
@@ -72,7 +72,7 @@ Resumen:
 
 | Capa | Responsabilidad |
 |------|-----------------|
-| Apache (UJA) | Certificado SSL, `ProxyPass` a `:8075` |
+| Apache (UJA) | Certificado SSL, `ProxyPass` a `:8069` |
 | GitLab CI | `docker compose up`, build con base path |
 | Nginx contenedor | SPA + proxy `/auth/` y `/exam/` al backend |
 | Backend Uvicorn | `--proxy-headers`, HSTS, CORS HTTPS |
@@ -82,8 +82,8 @@ URL pública: **`https://sinbad2.ujaen.es/generadorexamenesllm/`**
 Apache (fragmento):
 
 ```apache
-ProxyPass        /generadorexamenesllm  http://host.docker.internal:8075/
-ProxyPassReverse /generadorexamenesllm  http://host.docker.internal:8075/
+ProxyPass        /generadorexamenesllm  http://host.docker.internal:8069/
+ProxyPassReverse /generadorexamenesllm  http://host.docker.internal:8069/
 ```
 
 Build:

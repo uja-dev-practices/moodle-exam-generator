@@ -3,8 +3,8 @@ stages:
 
 variables:
   APP_NAME: "generadorexamenesllms"
-  BACKEND_PORT: "8074"
-  FRONTEND_PORT: "8075"
+  BACKEND_PORT: "8068"
+  FRONTEND_PORT: "8069"
 
 deploy_to_sinbad2:
   stage: deploy
