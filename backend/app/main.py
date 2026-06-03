@@ -1,13 +1,15 @@
 from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
 
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.api.routes import auth, exports, generation, health, history, images, materials, questions, templates
 from app.core.config import get_settings
 from app.core.errors import register_exception_handlers
 from app.core.middleware import RateLimitMiddleware, RequestSizeLimitMiddleware
+from app.core.security_headers import SecurityHeadersMiddleware
 from app.db.init_db import init_db
 
 
@@ -25,6 +27,9 @@ def create_app() -> FastAPI:
     # las peticiones OPTIONS (preflight) respondan antes que rate limit, etc.
     app.add_middleware(RequestSizeLimitMiddleware, settings=settings)
     app.add_middleware(RateLimitMiddleware, settings=settings)
+    app.add_middleware(SecurityHeadersMiddleware, settings=settings)
+    if settings.trusted_hosts_list:
+        app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.trusted_hosts_list)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

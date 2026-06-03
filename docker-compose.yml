@@ -6,6 +6,9 @@ services:
       - ./backend/.env
     environment:
       DATABASE_URL: postgresql+psycopg://genexamenes:genexamenes@db:5432/genexamenes
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://sinbad2.ujaen.es/generadorexamenesllm}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-sinbad2.ujaen.es,localhost,127.0.0.1}
       # Sobrescribe backend/.env con el origen público del frontend en despliegue.
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://sinbad2.ujaen.es,http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8075}
       LLM_BASE_URL: 
