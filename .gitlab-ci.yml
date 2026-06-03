@@ -46,6 +46,9 @@ deploy_to_sinbad2:
 
       export BACKEND_PORT=$BACKEND_PORT
       export FRONTEND_PORT=$FRONTEND_PORT
+      export ENVIRONMENT=production
+      export PUBLIC_BASE_URL="https://sinbad2.ujaen.es/generadorexamenesllm"
+      export TRUSTED_HOSTS="sinbad2.ujaen.es,localhost,127.0.0.1"
       export ALLOWED_ORIGINS="https://sinbad2.ujaen.es,http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:$FRONTEND_PORT"
       export VITE_APP_BASE_PATH="/generadorexamenesllm/"
       export VITE_API_URL=""

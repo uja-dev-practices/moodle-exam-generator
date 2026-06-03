@@ -64,13 +64,22 @@ docker compose up --build
 Las variables `VITE_APP_BASE_PATH`, `VITE_API_URL` y `VITE_GOOGLE_CLIENT_ID` pueden pasarse como
 variables de entorno al ejecutar `docker compose`.
 
-## Despliegue HTTPS en subruta (Sinbad2)
+## Despliegue HTTPS en Sinbad2 (patrón orcid2sword)
 
-La app **no** va bajo `/deckofcars/` (eso es otro sitio). La URL pública es:
+Documentación completa: [`deploy/DESPLIEGUE_SINBAD2.md`](../deploy/DESPLIEGUE_SINBAD2.md)
 
-`https://sinbad2.ujaen.es/generadorexamenesllm/`
+Resumen:
 
-En Apache del servidor deben existir estas líneas (el prefijo se quita al llegar al contenedor en el puerto 8075):
+| Capa | Responsabilidad |
+|------|-----------------|
+| Apache (UJA) | Certificado SSL, `ProxyPass` a `:8075` |
+| GitLab CI | `docker compose up`, build con base path |
+| Nginx contenedor | SPA + proxy `/auth/` y `/exam/` al backend |
+| Backend Uvicorn | `--proxy-headers`, HSTS, CORS HTTPS |
+
+URL pública: **`https://sinbad2.ujaen.es/generadorexamenesllm/`**
+
+Apache (fragmento):
 
 ```apache
 ProxyPass        /generadorexamenesllm  http://host.docker.internal:8075/
@@ -84,7 +93,7 @@ VITE_APP_BASE_PATH=/generadorexamenesllm/
 VITE_API_URL=
 ```
 
-Si Apache no tiene ese `ProxyPass`, el navegador verá la web principal de Sinbad2 en lugar de esta app.
+El navegador habla solo con HTTPS (Apache → nginx → backend); no hay mixed content ni CORS cruzado entre puertos.
 
 ## Manejo de errores
 

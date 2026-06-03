@@ -7,6 +7,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     app_name: str = "GenExamenes IA"
     environment: str = "local"
+    public_base_url: str = "https://sinbad2.ujaen.es/generadorexamenesllm"
+    trusted_hosts: str = "sinbad2.ujaen.es,localhost,127.0.0.1"
+    security_hsts_seconds: int = Field(default=31_536_000, ge=0)
     api_prefix: str = ""
     api_key: str = Field(min_length=16)
     database_url: str = "postgresql+psycopg://genexamenes:genexamenes@localhost:5432/genexamenes"
@@ -42,8 +45,16 @@ class Settings(BaseSettings):
     )
 
     @property
+    def is_production(self) -> bool:
+        return self.environment.lower() in {"production", "prod"}
+
+    @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
+
+    @property
+    def trusted_hosts_list(self) -> list[str]:
+        return [host.strip() for host in self.trusted_hosts.split(",") if host.strip()]
 
 
 @lru_cache

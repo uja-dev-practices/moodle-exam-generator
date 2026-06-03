@@ -25,4 +25,9 @@ USER app
 
 EXPOSE 8074
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8074"]
+CMD ["uvicorn", "app.main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8074", \
+     "--proxy-headers", \
+     "--forwarded-allow-ips", "*", \
+     "--no-server-header"]
