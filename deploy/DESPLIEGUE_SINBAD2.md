@@ -15,8 +15,8 @@ El job `deploy_to_sinbad2` en `.gitlab-ci.yml`:
 1. Copia el código por SSH a Sinbad2.
 2. Ejecuta `docker compose build` y `docker compose up -d`.
 3. Expone servicios en **HTTP** (sin certificados en Docker):
-   - Frontend → `:8075`
-   - Backend → `:8074`
+   - Frontend → `:8069`
+   - Backend → `:8068`
 
 Variables de despliegue:
 
@@ -30,18 +30,28 @@ Variables de despliegue:
 
 ## 2. Apache (gestión UJA — no está en este repo)
 
-Fragmento mínimo (`deploy/apache-reverse-proxy.conf`):
+Configuración confirmada por sistemas (mismo estilo que `orcid2sword` → `:8073`):
 
 ```apache
-ProxyPass        /generadorexamenesllm  http://host.docker.internal:8075/
-ProxyPassReverse /generadorexamenesllm  http://host.docker.internal:8075/
+ProxyPass        /generadorexamenesllm  http://host.docker.internal:8069/
+ProxyPassReverse /generadorexamenesllm  http://host.docker.internal:8069/
+```
+
+**Importante:** esas líneas deben ir **antes** de las reglas de WordPress del sitio Sinbad2.
+Si no, Apache sigue devolviendo la web del grupo (cabeceras `X-Powered-By: PHP` y `X-Redirect-By: WordPress`).
+
+Comprobación rápida tras recargar Apache:
+
+```bash
+curl -I https://sinbad2.ujaen.es/generadorexamenesllm/
+# Debe mostrar Server: nginx (contenedor), NO PHP/WordPress
 ```
 
 | Paso | Qué ocurre |
 |------|------------|
 | Certificado SSL | Lo proporciona el servidor institucional |
 | Entrada pública | `https://sinbad2.ujaen.es/generadorexamenesllm/` |
-| Proxy | Apache reenvía a `:8075` (HTTP) y **quita** el prefijo |
+| Proxy | Apache reenvía a `:8069` (HTTP) y **quita** el prefijo |
 | Nginx contenedor | Sirve SPA y hace proxy de `/auth/` y `/exam/` al backend |
 
 Si falta el `ProxyPass`, la ruta la atiende el CMS de Sinbad2 (home del grupo).
@@ -51,7 +61,7 @@ Si falta el `ProxyPass`, la ruta la atiende el CMS de Sinbad2 (home del grupo).
 ### Frontend
 
 - Build con `VITE_APP_BASE_PATH=/generadorexamenesllm/`.
-- `nginx.conf` entiende rutas **con prefijo** (acceso directo `:8075`) y **sin prefijo** (tras Apache).
+- `nginx.conf` entiende rutas **con prefijo** (acceso directo `:8069`) y **sin prefijo** (tras Apache).
 - Proxy interno al backend; cabeceras `X-Forwarded-Proto` / `Host` propagadas desde Apache.
 
 ### Backend
@@ -64,7 +74,7 @@ Si falta el `ProxyPass`, la ruta la atiende el CMS de Sinbad2 (home del grupo).
 
 ```bash
 # Directo al contenedor (HTTP, con prefijo)
-curl -I http://sinbad2.ujaen.es:8075/generadorexamenesllm/
+curl -I http://sinbad2.ujaen.es:8069/generadorexamenesllm/
 
 # Tras Apache (HTTPS)
 curl -I https://sinbad2.ujaen.es/generadorexamenesllm/
