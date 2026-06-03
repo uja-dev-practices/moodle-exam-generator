@@ -1,9 +1,9 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
+import RootRoute from "./components/layout/RootRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
 import CreateTemplatePage from "./pages/CreateTemplatePage";
 import TemplateDetailPage from "./pages/TemplateDetailPage";
 import NotFoundPage from "./pages/NotFoundPage";
@@ -21,7 +21,7 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route path="/" element={<DashboardPage />} />
+        <Route path="/" element={<RootRoute />} />
         <Route path="/plantillas/nueva" element={<CreateTemplatePage />} />
         <Route path="/plantillas/:templateId" element={<TemplateDetailPage />} />
       </Route>
