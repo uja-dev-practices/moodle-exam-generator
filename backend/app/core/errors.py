@@ -51,9 +51,14 @@ def error_payload(code: str, message: str, details: object | None = None) -> dic
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def app_error_handler(_: Request, exc: AppError) -> ORJSONResponse:
+        headers: dict[str, str] | None = None
+        retry_after = getattr(exc, "retry_after", None)
+        if retry_after is not None:
+            headers = {"Retry-After": str(retry_after)}
         return ORJSONResponse(
             status_code=exc.status_code,
             content=error_payload(exc.code, exc.message),
+            headers=headers,
         )
 
     @app.exception_handler(StarletteHTTPException)

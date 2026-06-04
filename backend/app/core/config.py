@@ -18,9 +18,22 @@ class Settings(BaseSettings):
     rate_limit_window_seconds: int = Field(default=60, ge=1)
     max_request_bytes: int = Field(default=1_048_576, ge=1_024)
     llm_api_key: str | None = None
-    llm_base_url: str = ""
+    llm_base_url: str = Field(
+        default="",
+        description="URL base del LLM (solo servidor). No incluir en el repositorio.",
+    )
     llm_model: str = "qwen3.5:35b"
     llm_timeout_seconds: int = Field(default=180, ge=5)
+    llm_generate_rate_limit_requests: int = Field(
+        default=5,
+        ge=1,
+        description="Máximo de POST /exam/generate por usuario y ventana.",
+    )
+    llm_generate_rate_limit_window_seconds: int = Field(
+        default=3600,
+        ge=60,
+        description="Ventana en segundos para el límite de generación con LLM.",
+    )
     jwt_secret_key: str = Field(min_length=32)
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = Field(default=60 * 24, ge=5)
@@ -55,6 +68,13 @@ class Settings(BaseSettings):
     @property
     def trusted_hosts_list(self) -> list[str]:
         return [host.strip() for host in self.trusted_hosts.split(",") if host.strip()]
+
+    @property
+    def llm_ready(self) -> bool:
+        """True solo si URL y clave del LLM están definidas en el entorno del servidor."""
+        return bool(self.llm_base_url.strip()) and bool(
+            self.llm_api_key and self.llm_api_key.strip()
+        )
 
 
 @lru_cache

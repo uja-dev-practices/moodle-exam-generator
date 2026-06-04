@@ -581,14 +581,15 @@ Todas con `Authorization: Bearer <token>`.
 
 | Código | Ejemplo |
 |--------|---------|
-| 503 | `LLM_API_KEY` no configurada (`llm_unavailable`). |
+| 503 | LLM no configurado en el servidor (`llm_unavailable`: faltan `LLM_BASE_URL` y/o `LLM_API_KEY` en `.env`). |
+| 429 | Demasiadas generaciones automáticas por usuario (`llm_rate_limited`). |
 | 422 | JSON del modelo inválido (`parse_error`). |
 
 ```json
 {
   "error": {
     "code": "llm_unavailable",
-    "message": "LLM_API_KEY is not configured"
+    "message": "Automatic AI generation is not available"
   }
 }
 ```

@@ -11,11 +11,8 @@ services:
       TRUSTED_HOSTS: ${TRUSTED_HOSTS:-sinbad2.ujaen.es,localhost,127.0.0.1}
       # Sobrescribe backend/.env con el origen público del frontend en despliegue.
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://sinbad2.ujaen.es,http://sinbad2.ujaen.es,http://sinbad2.ujaen.es:8069}
-      LLM_BASE_URL: 
-      LLM_MODEL: qwen3.5:35b
-      LLM_TIMEOUT_SECONDS: "180"
-    ports:
-      - "${BACKEND_PORT:-8068}:8074"
+    expose:
+      - "8074"
     depends_on:
       db:
         condition: service_healthy
@@ -42,8 +39,8 @@ services:
       POSTGRES_DB: genexamenes
       POSTGRES_USER: genexamenes
       POSTGRES_PASSWORD: genexamenes
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
