@@ -1,0 +1,13 @@
+# Desarrollo local: publica backend y PostgreSQL solo en loopback.
+# Uso: docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# Configura LLM_BASE_URL y LLM_API_KEY en backend/.env (no subir al repositorio).
+
+services:
+  backend:
+    ports:
+      - "127.0.0.1:8068:8074"
+
+  db:
+    ports:
+      - "127.0.0.1:5432:5432"

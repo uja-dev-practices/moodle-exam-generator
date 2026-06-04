@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 
 from app.api.dependencies import get_exam_service, get_llm_client
+from app.api.llm_guard import require_llm_generation
 from app.core.auth import get_current_user
 from app.models.user import User
 from app.schemas.exam import (
@@ -37,7 +38,7 @@ def build_prompt(
 @router.post("/generate", response_model=ParsedQuestionsResponse)
 async def generate_exam(
     payload: GenerateExamRequest,
-    current_user: Annotated[User, Depends(get_current_user)],
+    current_user: Annotated[User, Depends(require_llm_generation)],
     service: Annotated[ExamService, Depends(get_exam_service)],
     llm_client: Annotated[LLMClient, Depends(get_llm_client)],
 ) -> ParsedQuestionsResponse:

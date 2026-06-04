@@ -17,6 +17,9 @@ class LLMClient:
         return f"{base}/api/chat"
 
     async def generate(self, prompt: str) -> str:
+        if not self.settings.llm_ready:
+            raise LLMUnavailableError("Automatic AI generation is not available")
+
         payload = {
             "model": self.settings.llm_model,
             "messages": [
