@@ -40,6 +40,9 @@ Capacidades principales:
 
 **Guía ampliada de API, flujo y errores:** [GUIA_API_Y_FLUJO.md](GUIA_API_Y_FLUJO.md)
 
+<img width="1181" height="705" alt="image" src="https://github.com/user-attachments/assets/8176ba2d-682b-479a-abbd-14dabfa123cd" />
+
+
 ---
 
 ## ![certificate](https://www.readmecodegen.com/api/social-icon?name=certificate&size=20) Tech Stack
